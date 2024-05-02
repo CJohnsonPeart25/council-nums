@@ -78,21 +78,18 @@ ALL_LAYERS = {
     ),
 }
 
-st.sidebar.markdown("### Map Layers")
 selected_layers = [
-    layer
-    for layer_name, layer in ALL_LAYERS.items()
-    if st.sidebar.checkbox(layer_name, True)
+    layer for layer_name, layer in ALL_LAYERS.items() if st.checkbox(layer_name, True)
 ]
 
 
 # Set the viewport location
 view_state = pdk.ViewState(
-    # latitude=52.596462,
-    # longitude=-2.157917,
-    latitude=midpoint[0],
-    longitude=midpoint[1],
-    zoom=5,
+    latitude=52.677188873291016,
+    longitude=-2.422278881072998,
+    # latitude=midpoint[0],
+    # longitude=midpoint[1],
+    zoom=8,
     bearing=0,
     pitch=0,
 )
@@ -109,6 +106,32 @@ if selected_layers:
 else:
     st.error("Please choose at least one layer above.")
 
-if st.checkbox("Show raw data"):
-    st.subheader("Raw data")
-    st.write("Not available for this dataset.")
+if st.checkbox("Show Stats"):
+    st.subheader("Stats")
+    # Get the % of permanent and seasonal staff
+    total = df["count"].sum()
+    perm_total = df_perm["count"].sum()
+    seasonal_total = df_seasonal["count"].sum()
+    perm_percent = perm_total / total * 100
+    seasonal_percent = seasonal_total / total * 100
+    st.write(f"#### Total Staff")
+    st.write(f"Permanent Staff: {perm_percent:.2f}%")
+    st.write(f"Seasonal Staff: {seasonal_percent:.2f}%")
+    # Postcodes we care about
+    postcodes = ["TF", "SY", "WV"]
+
+    # for each postcode, get the total number of staff and breakdown of permanent and seasonal
+    for postcode in postcodes:
+        df_postcode = df[df["Postcode"].str.startswith(postcode)]
+        total_postcode = df_postcode["count"].sum()
+        perm_postcode = df_postcode[df_postcode["STATUS4"] == "Permanent"][
+            "count"
+        ].sum()
+        seasonal_postcode = df_postcode[df_postcode["STATUS4"] == "Seasonal"][
+            "count"
+        ].sum()
+        perm_percent_postcode = perm_postcode / total_postcode * 100
+        seasonal_percent_postcode = seasonal_postcode / total_postcode * 100
+        st.write(f"\t#### Postcode {postcode}")
+        st.write(f"\tPermanent Staff: {perm_percent_postcode:.2f}%")
+        st.write(f"\tSeasonal Staff: {seasonal_percent_postcode:.2f}%")
