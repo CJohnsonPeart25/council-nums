@@ -130,8 +130,9 @@ if st.checkbox("Show Stats"):
         seasonal_postcode = df_postcode[df_postcode["STATUS4"] == "Seasonal"][
             "count"
         ].sum()
+        total_percent_postcode = total_postcode / total * 100
         perm_percent_postcode = perm_postcode / total_postcode * 100
         seasonal_percent_postcode = seasonal_postcode / total_postcode * 100
-        st.write(f"\t#### Postcode {postcode}")
+        st.write(f"\t#### Postcode {postcode}: {total_percent_postcode:.2f}% of Total")
         st.write(f"\tPermanent Staff: {perm_percent_postcode:.2f}%")
         st.write(f"\tSeasonal Staff: {seasonal_percent_postcode:.2f}%")
